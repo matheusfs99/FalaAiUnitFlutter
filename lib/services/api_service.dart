@@ -1,8 +1,17 @@
+import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:8000/api/accounts/user';
+  static String get baseUrl {
+    if (Platform.isAndroid) {
+      return 'http://10.0.2.2:8000/api/accounts/';
+    } else if (Platform.isIOS) {
+      return 'http://192.168.x.x:8000/api/accounts/'; // substituir pelo meu ip
+    } else {
+      return 'http://localhost:8000/api/accounts/';
+    }
+  }
 
   static Future<Map<String, dynamic>?> login(
       String email, String password) async {

@@ -3,6 +3,7 @@ import '../models/user_model.dart';
 import '../services/api_service.dart';
 import 'profile_screen.dart';
 import 'register_screen.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -32,8 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
         User user = User.fromJson(userData);
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) => ProfileScreen(userData: user)),
+          MaterialPageRoute(builder: (context) => HomeScreen(userData: user)),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

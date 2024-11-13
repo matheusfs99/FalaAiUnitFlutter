@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -92,6 +91,32 @@ class ApiService {
       }
     } else {
       print('Failed to load user data with status: ${response.statusCode}');
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> updateUserProfile(
+      int userId, String email, String firstName, String lastName) async {
+    final token = await getToken();
+    final response = await http.patch(
+      Uri.parse('$baseUrl/$userId/'),
+      headers: {'Authorization': 'Token $token'},
+      body: {
+        'email': email,
+        'first_name': firstName,
+        'last_name': lastName,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      try {
+        return json.decode(response.body);
+      } catch (e) {
+        print('Error decoding JSON: $e');
+        return null;
+      }
+    } else {
+      print('Failed to update user with status: ${response.statusCode}');
       return null;
     }
   }

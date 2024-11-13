@@ -1,16 +1,26 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static String get baseUrl {
-    if (Platform.isAndroid) {
-      return 'http://10.0.2.2:8000/api/accounts/';
-    } else if (Platform.isIOS) {
-      return 'http://192.168.x.x:8000/api/accounts/'; // substituir pelo meu ip
-    } else {
-      return 'http://localhost:8000/api/accounts/';
-    }
+  // static const String baseUrl = 'http://127.0.0.1:8000/api/accounts/user'; // web
+  static const String baseUrl =
+      'http://10.0.2.2:8000/api/accounts/user'; // android
+
+  static String? _token;
+
+  static Future<void> saveToken(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('auth_token', token);
+    _token = token;
+  }
+
+  static Future<String?> getToken() async {
+    if (_token != null) return _token;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('auth_token');
+    return _token;
   }
 
   static Future<Map<String, dynamic>?> login(
@@ -22,7 +32,10 @@ class ApiService {
 
     if (response.statusCode == 200) {
       try {
-        return json.decode(response.body); // Decodifica o JSON da resposta
+        final loginData = json.decode(response.body);
+        String token = loginData['token'];
+        await saveToken(token);
+        return loginData;
       } catch (e) {
         print('Error decoding JSON: $e');
         return null;
@@ -30,6 +43,21 @@ class ApiService {
     } else {
       print('Login failed with status: ${response.statusCode}');
       return null;
+    }
+  }
+
+  static Future<void> logout() async {
+    final token = await getToken();
+    final response = await http.post(
+      Uri.parse('$baseUrl/logout/'),
+      headers: {'Authorization': 'Token $token'},
+    );
+    if (response.statusCode == 200) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.remove('auth_token');
+      _token = null;
+    } else {
+      print('Logout failed with status: ${response.statusCode}');
     }
   }
 
@@ -48,8 +76,8 @@ class ApiService {
     return response.statusCode == 201;
   }
 
-  static Future<Map<String, dynamic>?> getUserData(
-      String token, int userId) async {
+  static Future<Map<String, dynamic>?> getUserData(int userId) async {
+    final token = await getToken();
     final response = await http.get(
       Uri.parse('$baseUrl/$userId/'),
       headers: {'Authorization': 'Token $token'},

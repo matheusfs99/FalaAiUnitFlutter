@@ -5,6 +5,8 @@ import 'profile_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -21,12 +23,10 @@ class _LoginScreenState extends State<LoginScreen> {
     Map<String, dynamic>? loginData = await ApiService.login(email, password);
 
     if (loginData != null && loginData.containsKey('token')) {
-      String token = loginData['token'];
       int userId = loginData['id'];
 
       // Chamamos getUserData usando o token recebido
-      Map<String, dynamic>? userData =
-          await ApiService.getUserData(token, userId);
+      Map<String, dynamic>? userData = await ApiService.getUserData(userId);
 
       if (userData != null) {
         User user = User.fromJson(userData);
@@ -36,35 +36,35 @@ class _LoginScreenState extends State<LoginScreen> {
               builder: (context) => ProfileScreen(userData: user)),
         );
       } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Failed to load user data")));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Failed to load user data")));
       }
     } else {
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Login failed")));
+          .showSnackBar(const SnackBar(content: Text("Login failed")));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Login")),
+      appBar: AppBar(title: const Text("Login")),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: "Email"),
+              decoration: const InputDecoration(labelText: "Email"),
             ),
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: "Password"),
+              decoration: const InputDecoration(labelText: "Password"),
               obscureText: true,
             ),
-            SizedBox(height: 20),
-            ElevatedButton(onPressed: login, child: Text("Login")),
+            const SizedBox(height: 20),
+            ElevatedButton(onPressed: login, child: const Text("Login")),
             TextButton(
               onPressed: () {
                 Navigator.push(
@@ -72,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   MaterialPageRoute(builder: (context) => RegisterScreen()),
                 );
               },
-              child: Text("Don't have an account? Register"),
+              child: const Text("Don't have an account? Register"),
             ),
           ],
         ),

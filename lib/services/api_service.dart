@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fala_ai_unit/models/meeting_model.dart';
 
 class ApiService {
-  // static const String baseUrl = 'http://127.0.0.1:8000/api/accounts/user'; // web
-  static const String baseUrl =
-      'http://10.0.2.2:8000/api/accounts/user'; // android
+  static const String baseUrl = 'http://127.0.0.1:8000/api'; // web e ios
+  // static const String baseUrl = 'http://10.0.2.2:8000/api'; // android
 
   static String? _token;
 
@@ -25,7 +25,7 @@ class ApiService {
   static Future<Map<String, dynamic>?> login(
       String email, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/login/'),
+      Uri.parse('$baseUrl/accounts/user/login/'),
       body: {'email': email, 'password': password},
     );
 
@@ -48,7 +48,7 @@ class ApiService {
   static Future<void> logout() async {
     final token = await getToken();
     final response = await http.post(
-      Uri.parse('$baseUrl/logout/'),
+      Uri.parse('$baseUrl/accounts/user/logout/'),
       headers: {'Authorization': 'Token $token'},
     );
     if (response.statusCode == 200) {
@@ -63,7 +63,7 @@ class ApiService {
   static Future<bool> register(
       String email, String firstName, String lastName, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/'),
+      Uri.parse('$baseUrl/accounts/user/'),
       body: {
         'email': email,
         'first_name': firstName,
@@ -78,7 +78,7 @@ class ApiService {
   static Future<Map<String, dynamic>?> getUserData(int userId) async {
     final token = await getToken();
     final response = await http.get(
-      Uri.parse('$baseUrl/$userId/'),
+      Uri.parse('$baseUrl/accounts/user/$userId/'),
       headers: {'Authorization': 'Token $token'},
     );
 
@@ -99,7 +99,7 @@ class ApiService {
       int userId, String email, String firstName, String lastName) async {
     final token = await getToken();
     final response = await http.patch(
-      Uri.parse('$baseUrl/$userId/'),
+      Uri.parse('$baseUrl/accounts/user/$userId/'),
       headers: {'Authorization': 'Token $token'},
       body: {
         'email': email,
@@ -117,6 +117,27 @@ class ApiService {
       }
     } else {
       print('Failed to update user with status: ${response.statusCode}');
+      return null;
+    }
+  }
+
+  static Future<List<Meeting>?> meetings() async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/meetings/meeting/'),
+      headers: {'Authorization': 'Token $token'},
+    );
+
+    if (response.statusCode == 200) {
+      try {
+        List<dynamic> data = json.decode(response.body);
+        return data.map((item) => Meeting.fromJson(item)).toList();
+      } catch (e) {
+        print('Error decoding JSON: $e');
+        return null;
+      }
+    } else {
+      print('Failed to load meetings with status: ${response.statusCode}');
       return null;
     }
   }

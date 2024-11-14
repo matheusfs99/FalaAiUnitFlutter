@@ -1,6 +1,7 @@
 import 'package:fala_ai_unit/models/user_model.dart';
 import 'package:fala_ai_unit/screens/login_screen.dart';
 import 'package:fala_ai_unit/screens/meetings_screen.dart';
+import 'package:fala_ai_unit/screens/schedule_meeting_screen.dart';
 import 'package:fala_ai_unit/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'profile_screen.dart';
@@ -61,7 +62,11 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Função futura para o botão "Marcar reuniões"
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ScheduleMeetingScreen()),
+                );
               },
               child: Text('Marcar reuniões'),
             ),

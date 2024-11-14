@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fala_ai_unit/models/meeting_model.dart';
 
@@ -121,6 +122,26 @@ class ApiService {
     }
   }
 
+  static Future<Map<String, dynamic>?> searchUserByEmail(String email) async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/accounts/user/search_by_email/?email=$email'),
+      headers: {'Authorization': 'Token $token'},
+    );
+
+    if (response.statusCode == 200) {
+      try {
+        return json.decode(response.body);
+      } catch (e) {
+        print('Error decoding JSON: $e');
+        return null;
+      }
+    } else {
+      print('Failed to load user data with status: ${response.statusCode}');
+      return null;
+    }
+  }
+
   static Future<List<Meeting>?> meetings() async {
     final token = await getToken();
     final response = await http.get(
@@ -140,5 +161,26 @@ class ApiService {
       print('Failed to load meetings with status: ${response.statusCode}');
       return null;
     }
+  }
+
+  static Future<bool> scheduleMeeting(int guestId, String description,
+      DateTime startTime, DateTime endTime) async {
+    final token = await getToken();
+
+    final formattedStartTime =
+        DateFormat("dd/MM/yyyy HH:mm:ss").format(startTime);
+    final formattedEndTime = DateFormat("dd/MM/yyyy HH:mm:ss").format(endTime);
+
+    final response =
+        await http.post(Uri.parse('$baseUrl/meetings/meeting/'), headers: {
+      'Authorization': 'Token $token'
+    }, body: {
+      'guest': guestId.toString(),
+      'description': description,
+      'start_time': formattedStartTime.toString(),
+      'end_time': formattedEndTime.toString()
+    });
+
+    return response.statusCode == 201;
   }
 }

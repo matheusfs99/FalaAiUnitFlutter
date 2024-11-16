@@ -1,3 +1,4 @@
+import 'package:fala_ai_unit/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
@@ -45,7 +46,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Register")),
+      appBar: const CustomAppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

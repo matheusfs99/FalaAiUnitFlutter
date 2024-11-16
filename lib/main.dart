@@ -11,9 +11,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Fala ai unit',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: const Color(0xFF5199C3), // Cor azul de fundo
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF5199C3), // AppBar azul
+        ),
       ),
       home: LoginScreen(),
     );

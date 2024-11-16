@@ -1,4 +1,4 @@
-import 'package:fala_ai_unit/screens/login_screen.dart';
+import 'package:fala_ai_unit/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
@@ -104,27 +104,10 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
     }
   }
 
-  Future<void> _logout(BuildContext context) async {
-    await ApiService.logout();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-      (route) => false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Marcar Reunião'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context),
-          ),
-        ],
-      ),
+      appBar: CustomAppBarWithLogout(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

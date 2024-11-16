@@ -1,4 +1,4 @@
-import 'package:fala_ai_unit/screens/login_screen.dart';
+import 'package:fala_ai_unit/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:fala_ai_unit/services/api_service.dart';
 import 'package:fala_ai_unit/models/meeting_model.dart';
@@ -27,27 +27,10 @@ class _MeetingsScreenState extends State<MeetingsScreen> {
     }
   }
 
-  Future<void> _logout(BuildContext context) async {
-    await ApiService.logout();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-      (route) => false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Agenda'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context),
-          ),
-        ],
-      ),
+      appBar: CustomAppBarWithLogout(),
       body: meetings.isEmpty
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
